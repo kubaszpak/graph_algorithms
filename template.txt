@@ -1,0 +1,4 @@
+<number_of_edges> <number_of_vertices> <starting_vertex> <final_vertex> (vertices start at 0)
+<edge 1: starting_vertex final_vertex weight>
+<edge 2: starting_vertex final_vertex weight>
+<edge 3: starting_vertex final_vertex weight>
