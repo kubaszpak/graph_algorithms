@@ -105,6 +105,21 @@ void AdjencyMatrix::print()
     }
 }
 
-void primMST(){
-    
+void AdjencyMatrix::primMST()
+{
+    std::vector<bool> visited(number_of_vertices, false);
+
+    std::priority_queue<PrimEdge, std::vector<PrimEdge>, std::greater<PrimEdge>> priority_queue;
+
+    priority_queue.push(PrimEdge(3, 3, 3));
+    priority_queue.push(PrimEdge(3, 3, 4));
+    priority_queue.push(PrimEdge(3, 3, 6));
+    priority_queue.push(PrimEdge(3, 3, 2));
+    priority_queue.push(PrimEdge(3, 3, 9));
+
+    while (priority_queue.empty() == false)
+    {
+        std::cout << priority_queue.top() << std::endl;
+        priority_queue.pop();
+    }
 }

@@ -7,6 +7,34 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <queue>
+
+class PrimEdge
+{
+
+    int starting_vertex;
+    int final_vertex;
+    int weight;
+
+public:
+    PrimEdge(int _starting_vertex, int _final_vertex, int _weight)
+    {
+        starting_vertex = _starting_vertex;
+        final_vertex = _final_vertex;
+        weight = _weight;
+    }
+
+    operator>(const PrimEdge &edge) const
+    {
+        return weight > edge.weight;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const PrimEdge &edge)
+    {
+        os << "S: " << edge.starting_vertex << ", E: " << edge.final_vertex << ", W: " << edge.weight;
+        return os;
+    }
+};
 
 class AdjencyMatrix
 {
