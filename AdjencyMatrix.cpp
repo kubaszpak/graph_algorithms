@@ -103,23 +103,71 @@ void AdjencyMatrix::print()
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
-void AdjencyMatrix::primMST()
+void AdjencyMatrix::prim()
 {
     std::vector<bool> visited(number_of_vertices, false);
 
-    std::priority_queue<PrimEdge, std::vector<PrimEdge>, std::greater<PrimEdge>> priority_queue;
+    std::priority_queue<Edge, std::vector<Edge>, std::greater<Edge>> priority_queue;
 
-    priority_queue.push(PrimEdge(3, 3, 3));
-    priority_queue.push(PrimEdge(3, 3, 4));
-    priority_queue.push(PrimEdge(3, 3, 6));
-    priority_queue.push(PrimEdge(3, 3, 2));
-    priority_queue.push(PrimEdge(3, 3, 9));
+    int vertex = this->starting_vertex;
 
-    while (priority_queue.empty() == false)
+    std::vector<Edge> result_edge_list;
+
+    Edge edge;
+
+    // while (priority_queue.empty() == false)
+    // {
+    //     std::cout << priority_queue.top() << std::endl;
+    //     priority_queue.pop();
+    // }
+
+    for (int i = 0; i < number_of_vertices - 1; i++)
     {
-        std::cout << priority_queue.top() << std::endl;
+
+        visited[vertex] = true;
+
+        for (int j = 0; j < number_of_vertices; j++)
+        {
+
+            if (matrix[vertex][j] != max_int && visited[j] == false)
+            {
+                priority_queue.push(Edge(vertex, j, matrix[vertex][j]));
+            }
+        }
+
+        edge = priority_queue.top();
         priority_queue.pop();
+
+        while (visited[edge.final_vertex] == true && !priority_queue.empty())
+        {
+            edge = priority_queue.top();
+            std::cout << edge << std::endl;
+            priority_queue.pop();
+        }
+
+        vertex = edge.final_vertex;
+
+        result_edge_list.push_back(edge);
     }
+
+    if (priority_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
+    {
+        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinającego!" << std::endl;
+        return;
+    }
+
+    int result = 0;
+    for (int i = 0; i < result_edge_list.size(); i++)
+    {
+        std::cout << result_edge_list[i] << std::endl;
+        result += result_edge_list[i].weight;
+    }
+    std::cout << "Result: " << result << std::endl;
+}
+
+void AdjencyMatrix::dijkstra()
+{
 }
