@@ -39,6 +39,31 @@ public:
     }
 };
 
+class DijkstraVertex
+{
+public:
+    int vertex_number;
+    int cost;
+
+    DijkstraVertex() {}
+
+    DijkstraVertex(int _vertex_number, int _cost)
+    {
+        vertex_number = _vertex_number;
+        cost = _cost;
+    }
+
+    operator>(const DijkstraVertex &dv) const
+    {
+        return cost > dv.cost;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const DijkstraVertex &vertex)
+    {
+        os << "V: " << vertex.vertex_number << ", Cost: " << vertex.cost;
+        return os;
+    }
+};
 class AdjencyMatrix
 {
 public:

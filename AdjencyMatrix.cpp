@@ -144,13 +144,15 @@ void AdjencyMatrix::prim()
         while (visited[edge.final_vertex] == true && !priority_queue.empty())
         {
             edge = priority_queue.top();
-            std::cout << edge << std::endl;
+            // std::cout << edge << std::endl;
             priority_queue.pop();
         }
 
         vertex = edge.final_vertex;
 
         result_edge_list.push_back(edge);
+
+        // if(priority_queue.empty()) break;
     }
 
     if (priority_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
@@ -170,4 +172,56 @@ void AdjencyMatrix::prim()
 
 void AdjencyMatrix::dijkstra()
 {
+    std::priority_queue<DijkstraVertex, std::vector<DijkstraVertex>, std::greater<DijkstraVertex>> vertex_queue;
+    std::vector<int> vertex_costs(number_of_vertices, max_int);
+    std::vector<int> vertex_ancestors(number_of_vertices, -1);
+    std::vector<bool> visited(number_of_vertices, false);
+
+    // vertex_costs[starting_vertex] = 0;
+    // visited[starting_vertex] = true;
+    // int vertex = starting_vertex;
+
+    vertex_costs[starting_vertex] = 0;
+    vertex_queue.push(DijkstraVertex(starting_vertex, 0));
+
+    DijkstraVertex dijkstraVertex;
+    int new_cost, current_cost;
+
+    while (!vertex_queue.empty())
+    {
+        do
+        {
+            dijkstraVertex = vertex_queue.top();
+            vertex_queue.pop();
+            std::cout << dijkstraVertex << std::endl;
+        } while ((dijkstraVertex.cost != vertex_costs[dijkstraVertex.vertex_number] || visited[dijkstraVertex.vertex_number] == true) && !vertex_queue.empty());
+
+        visited[dijkstraVertex.vertex_number] = true;
+
+        for (int i = 0; i < number_of_vertices; i++)
+        {
+
+            if (matrix[dijkstraVertex.vertex_number][i] != max_int)
+            {
+                std::cout << "TUTAJ" << std::endl;
+                // auto it = std::find_if(vertex_queue.begin(), vertex_queue.end(), [&i](const DijkstraVertex &vertex)
+                //                        { return vertex.vertex_number == i; });
+                //  priority_queue.push(DijkstraVertex{});
+                // std::cout << it << std::endl;
+                new_cost = dijkstraVertex.cost + matrix[dijkstraVertex.vertex_number][i];
+                current_cost = vertex_costs[i];
+                if (new_cost < current_cost)
+                {
+                    vertex_ancestors[i] = dijkstraVertex.vertex_number;
+                    vertex_costs[i] = new_cost;
+                    vertex_queue.push(DijkstraVertex(i, new_cost));
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < number_of_vertices; i++)
+    {
+        std::cout << i << " " << vertex_costs[i] << " " << vertex_ancestors[i] << std::endl;
+    }
 }
