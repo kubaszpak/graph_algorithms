@@ -1,5 +1,5 @@
-#ifndef ADJENCY_MATRIX_H
-#define ADJENCY_MATRIX_H
+#ifndef ADJENCY_LISTS_H
+#define ADJENCY_LISTS_H
 
 #include <limits>
 #include <iostream>
@@ -11,20 +11,20 @@
 #include <algorithm>
 #include "AdditionalDataStructures.h"
 
-class AdjencyMatrix
+class AdjencyLists
 {
 public:
-    AdjencyMatrix();
-    ~AdjencyMatrix();
-    void fill_with_inifinites(int number_of_vertices);
-    static AdjencyMatrix &init_from_file(bool is_directed = false);
+    AdjencyLists();
+    ~AdjencyLists();
+    void resize_vector(int number_of_vertices);
+    static AdjencyLists &init_from_file(bool is_directed = false);
     void print();
 
     void prim();
     void dijkstra();
 
 private:
-    std::vector<std::vector<int>> matrix;
+    std::vector<std::vector<std::pair<int, int>>> adjency_lists;
     int number_of_edges;
     int number_of_vertices;
     int starting_vertex;
@@ -32,4 +32,4 @@ private:
     static int max_int;
 };
 
-#endif /* ADJENCY_MATRIX_H */
+#endif /* ADJENCY_LISTS_H */

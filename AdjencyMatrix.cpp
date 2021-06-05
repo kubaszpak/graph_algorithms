@@ -1,8 +1,9 @@
 #include "AdjencyMatrix.h"
 
+int AdjencyMatrix::max_int = std::numeric_limits<int>::max();
+
 AdjencyMatrix::AdjencyMatrix()
 {
-    max_int = std::numeric_limits<int>::max();
 }
 
 AdjencyMatrix::~AdjencyMatrix()
@@ -12,7 +13,7 @@ AdjencyMatrix::~AdjencyMatrix()
 
 void AdjencyMatrix::fill_with_inifinites(int number_of_vertices)
 {
-    matrix.resize(number_of_vertices, std::vector<int>(number_of_vertices, max_int));
+    matrix.resize(number_of_vertices, std::vector<int>(number_of_vertices, AdjencyMatrix::max_int));
 }
 
 AdjencyMatrix &AdjencyMatrix::init_from_file(bool is_directed)
@@ -60,10 +61,12 @@ AdjencyMatrix &AdjencyMatrix::init_from_file(bool is_directed)
                     return adjency_matrix;
                 }
                 else
-                    adjency_matrix.matrix[starting_vertex][final_vertex] = edge_weight;
-                if (!is_directed)
                 {
-                    adjency_matrix.matrix[final_vertex][starting_vertex] = edge_weight;
+                    adjency_matrix.matrix[starting_vertex][final_vertex] = edge_weight;
+                    if (!is_directed)
+                    {
+                        adjency_matrix.matrix[final_vertex][starting_vertex] = edge_weight;
+                    }
                 }
             }
         }
@@ -80,6 +83,8 @@ AdjencyMatrix &AdjencyMatrix::init_from_file(bool is_directed)
 
 void AdjencyMatrix::print()
 {
+    std::cout << std::endl
+              << "--- AdjencyMatrix ---" << std::endl;
     std::cout << "      ";
     for (int i = 0; i < number_of_vertices; i++)
     {
@@ -91,7 +96,7 @@ void AdjencyMatrix::print()
         std::cout << std::setw(3) << i << "   ";
         for (int j = 0; j < number_of_vertices; j++)
         {
-            if (matrix[i][j] != max_int)
+            if (matrix[i][j] != AdjencyMatrix::max_int)
             {
                 std::cout << std::setw(3) << matrix[i][j] << " ";
             }
@@ -132,7 +137,7 @@ void AdjencyMatrix::prim()
         for (int j = 0; j < number_of_vertices; j++)
         {
 
-            if (matrix[vertex][j] != max_int && visited[j] == false)
+            if (matrix[vertex][j] != AdjencyMatrix::max_int && visited[j] == false)
             {
                 priority_queue.push(Edge(vertex, j, matrix[vertex][j]));
             }
@@ -173,7 +178,7 @@ void AdjencyMatrix::prim()
 void AdjencyMatrix::dijkstra()
 {
     std::priority_queue<DijkstraVertex, std::vector<DijkstraVertex>, std::greater<DijkstraVertex>> vertex_queue;
-    std::vector<int> vertex_costs(number_of_vertices, max_int);
+    std::vector<int> vertex_costs(number_of_vertices, AdjencyMatrix::max_int);
     std::vector<int> vertex_ancestors(number_of_vertices, -1);
     std::vector<bool> visited(number_of_vertices, false);
 
@@ -186,6 +191,7 @@ void AdjencyMatrix::dijkstra()
 
     DijkstraVertex dijkstraVertex;
     int new_cost, current_cost;
+    // int prev_vertex_number = -1;
 
     while (!vertex_queue.empty())
     {
@@ -193,17 +199,22 @@ void AdjencyMatrix::dijkstra()
         {
             dijkstraVertex = vertex_queue.top();
             vertex_queue.pop();
-            std::cout << dijkstraVertex << std::endl;
+            // std::cout << dijkstraVertex << std::endl;
         } while ((dijkstraVertex.cost != vertex_costs[dijkstraVertex.vertex_number] || visited[dijkstraVertex.vertex_number] == true) && !vertex_queue.empty());
+
+        if (dijkstraVertex.cost != vertex_costs[dijkstraVertex.vertex_number])
+        {
+            // std::cout << "BREAK LAST" << std::endl;
+            break;
+        }
 
         visited[dijkstraVertex.vertex_number] = true;
 
         for (int i = 0; i < number_of_vertices; i++)
         {
 
-            if (matrix[dijkstraVertex.vertex_number][i] != max_int)
+            if (matrix[dijkstraVertex.vertex_number][i] != AdjencyMatrix::max_int) // && i != prev_vertex_number maybe
             {
-                std::cout << "TUTAJ" << std::endl;
                 // auto it = std::find_if(vertex_queue.begin(), vertex_queue.end(), [&i](const DijkstraVertex &vertex)
                 //                        { return vertex.vertex_number == i; });
                 //  priority_queue.push(DijkstraVertex{});
@@ -212,16 +223,35 @@ void AdjencyMatrix::dijkstra()
                 current_cost = vertex_costs[i];
                 if (new_cost < current_cost)
                 {
+                    // std::cout << "Updating " << dijkstraVertex << " FROM " << current_cost << " TO " << new_cost << std::endl;
                     vertex_ancestors[i] = dijkstraVertex.vertex_number;
                     vertex_costs[i] = new_cost;
                     vertex_queue.push(DijkstraVertex(i, new_cost));
                 }
             }
         }
+        // prev_vertex_number = dijkstraVertex.vertex_number;
     }
 
+    std::cout << "Start = " << starting_vertex << std::endl;
+    std::cout << "End   Dist    Path" << std::endl;
     for (int i = 0; i < number_of_vertices; i++)
     {
-        std::cout << i << " " << vertex_costs[i] << " " << vertex_ancestors[i] << std::endl;
+        std::string path = "";
+        std::cout << std::setw(4) << i << " " << std::setw(4) << vertex_costs[i] << "  |  ";
+        int parent = i;
+        do
+        {
+            path = std::to_string(parent) + " " + path;
+            parent = vertex_ancestors[parent];
+        } while (parent != -1);
+
+        std::cout
+            << path << std::endl;
+    }
+
+    if (vertex_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
+    {
+        std::cout << "UWAGA! Nie do wszystkich wierzcholkow mozna dotrzec z wierzcholka poczatkowego!" << std::endl;
     }
 }
