@@ -8,7 +8,7 @@ AdjencyMatrix::AdjencyMatrix()
 
 AdjencyMatrix::~AdjencyMatrix()
 {
-    matrix.clear();
+    delete_vector();
 }
 
 void AdjencyMatrix::fill_with_inifinites(int number_of_vertices)
@@ -16,21 +16,35 @@ void AdjencyMatrix::fill_with_inifinites(int number_of_vertices)
     matrix.resize(number_of_vertices, std::vector<int>(number_of_vertices, AdjencyMatrix::max_int));
 }
 
-AdjencyMatrix &AdjencyMatrix::init_from_file(bool is_directed)
+void AdjencyMatrix::delete_vector()
 {
+    matrix.clear();
+}
 
-    std::string file_name;
+bool AdjencyMatrix::is_empty()
+{
+    return matrix.empty();
+}
 
-    std::cout << "Enter a path to the text file with the graph representation: (Enter to try: graph.txt)" << std::endl;
-    getline(std::cin, file_name);
-    if (file_name.empty())
+void AdjencyMatrix::swap_vector_for_empty()
+{
+    for (int i = 0; i < matrix.size(); i++)
     {
-        file_name = "graph.txt";
+        matrix[i].clear();
+        matrix[i].resize(0);
     }
+    matrix.clear();
+    matrix.resize(0);
+}
 
+AdjencyMatrix &AdjencyMatrix::init_from_file(std::string file_name, bool is_directed)
+{
+    std::cout << is_directed << std::endl;
     std::ifstream file(file_name);
 
     static AdjencyMatrix adjency_matrix;
+
+    adjency_matrix.matrix.swap(std::vector<std::vector<int>>(0));
 
     int starting_vertex, final_vertex, edge_weight;
 
@@ -162,7 +176,7 @@ void AdjencyMatrix::prim()
 
     if (priority_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
     {
-        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinającego!" << std::endl;
+        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
         return;
     }
 
@@ -192,8 +206,10 @@ void AdjencyMatrix::dijkstra()
     DijkstraVertex dijkstraVertex;
     int new_cost, current_cost;
     // int prev_vertex_number = -1;
+    bool negative_edge_found = false;
+    int number_of_iterations = 0;
 
-    while (!vertex_queue.empty())
+    while (!vertex_queue.empty() && number_of_iterations < number_of_vertices - 1)
     {
         do
         {
@@ -220,6 +236,8 @@ void AdjencyMatrix::dijkstra()
                 //                        { return vertex.vertex_number == i; });
                 //  priority_queue.push(DijkstraVertex{});
                 // std::cout << it << std::endl;
+                if (matrix[dijkstraVertex.vertex_number][i] < 0)
+                    negative_edge_found = true;
                 new_cost = dijkstraVertex.cost + matrix[dijkstraVertex.vertex_number][i];
                 current_cost = vertex_costs[i];
                 if (new_cost < current_cost)
@@ -231,15 +249,28 @@ void AdjencyMatrix::dijkstra()
                 }
             }
         }
+        number_of_iterations++;
         // prev_vertex_number = dijkstraVertex.vertex_number;
     }
+
+    if (negative_edge_found)
+        std::cout << "UWAGA! Znaleziono krawedz o ujemnej wadze, jesli program nie zatrzymuje sie, w grafie znajduje sie ujemny cykl, zatrzymaj dzialanie programu CTRL C" << std::endl;
 
     std::cout << "Start = " << starting_vertex << std::endl;
     std::cout << "End   Dist    Path" << std::endl;
     for (int i = 0; i < number_of_vertices; i++)
     {
         std::string path = "";
-        std::cout << std::setw(4) << i << " " << std::setw(4) << vertex_costs[i] << "  |  ";
+        std::cout << std::setw(4) << i << " ";
+        if (vertex_costs[i] == AdjencyMatrix::max_int)
+        {
+            std::cout << "INF ";
+        }
+        else
+        {
+            std::cout << std::setw(4) << vertex_costs[i];
+        }
+        std::cout << "  |  ";
         int parent = i;
         do
         {

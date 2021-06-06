@@ -17,9 +17,12 @@ public:
     AdjencyLists();
     ~AdjencyLists();
     void resize_vector(int number_of_vertices);
-    static AdjencyLists &init_from_file(bool is_directed = false);
+    static AdjencyLists &init_from_file(std::string file_name, bool is_directed = false);
     void print();
     bool edge_exists(int from, int to);
+    void delete_vector();
+    bool is_empty();
+    void swap_vector_for_empty();
 
     void prim();
     void dijkstra();

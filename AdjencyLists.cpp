@@ -8,7 +8,7 @@ AdjencyLists::AdjencyLists()
 
 AdjencyLists::~AdjencyLists()
 {
-    adjency_lists.clear();
+    delete_vector();
 }
 
 void AdjencyLists::resize_vector(int number_of_vertices)
@@ -16,20 +16,35 @@ void AdjencyLists::resize_vector(int number_of_vertices)
     adjency_lists.resize(number_of_vertices);
 }
 
-AdjencyLists &AdjencyLists::init_from_file(bool is_directed)
+void AdjencyLists::delete_vector()
 {
-    std::string file_name;
+    adjency_lists.clear();
+}
 
-    std::cout << "Enter a path to the text file with the graph representation: (Enter to try: graph.txt)" << std::endl;
-    getline(std::cin, file_name);
-    if (file_name.empty())
+bool AdjencyLists::is_empty()
+{
+    return adjency_lists.empty();
+}
+
+void AdjencyLists::swap_vector_for_empty()
+{
+    for (int i = 0; i < adjency_lists.size(); i++)
     {
-        file_name = "graph.txt";
+        adjency_lists[i].clear();
+        adjency_lists.resize(0);
     }
+    adjency_lists.clear();
+    adjency_lists.resize(0);
+}
+
+AdjencyLists &AdjencyLists::init_from_file(std::string file_name, bool is_directed)
+{
 
     std::ifstream file(file_name);
 
     static AdjencyLists adjency_lists;
+
+    adjency_lists.adjency_lists.swap(std::vector<std::vector<std::pair<int, int>>>(0));
 
     int starting_vertex, final_vertex, edge_weight;
 
@@ -91,6 +106,7 @@ void AdjencyLists::print()
         std::cout << i << "    ";
         for (int j = 0; j < this->adjency_lists[i].size(); j++)
         {
+            std::cout << "ROZMIAR " << this->adjency_lists[i].size() << std::endl;
             std::cout << std::left << std::setw(2) << this->adjency_lists[i][j].first << " " << std::left << std::setw(2) << this->adjency_lists[i][j].second << "    ";
         }
         std::cout << std::endl;
@@ -156,7 +172,7 @@ void AdjencyLists::prim()
 
     if (priority_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
     {
-        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinającego!" << std::endl;
+        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
         return;
     }
 
@@ -181,8 +197,10 @@ void AdjencyLists::dijkstra()
 
     DijkstraVertex dijkstraVertex;
     int new_cost, current_cost;
+    int number_of_iterations = 0;
+    bool negative_edge_found = false;
 
-    while (!vertex_queue.empty())
+    while (!vertex_queue.empty() && number_of_iterations < number_of_vertices - 1)
     {
         do
         {
@@ -202,6 +220,8 @@ void AdjencyLists::dijkstra()
         {
             // matrix[dijkstraVertex.vertex_number][i]
             int vertex_number = this->adjency_lists[dijkstraVertex.vertex_number][i].first;
+            if (adjency_lists[dijkstraVertex.vertex_number][i].second < 0)
+                negative_edge_found = true;
             new_cost = dijkstraVertex.cost + adjency_lists[dijkstraVertex.vertex_number][i].second;
             current_cost = vertex_costs[vertex_number];
             // std::cout << "Debating in " << dijkstraVertex << " is " << new_cost << " or " << current_cost << std::endl;
@@ -213,17 +233,31 @@ void AdjencyLists::dijkstra()
                 vertex_queue.push(DijkstraVertex(vertex_number, new_cost));
             }
         }
+        number_of_iterations++;
     }
+
+    if (negative_edge_found)
+        std::cout << "UWAGA! Znaleziono krawedz o ujemnej wadze, jesli program nie zatrzymuje sie, w grafie znajduje sie ujemny cykl, zatrzymaj dzialanie programu CTRL C" << std::endl;
 
     std::cout << "Start = " << starting_vertex << std::endl;
     std::cout << "End   Dist    Path" << std::endl;
     for (int i = 0; i < number_of_vertices; i++)
     {
         std::string path = "";
-        std::cout << std::setw(4) << i << " " << std::setw(4) << vertex_costs[i] << "  |  ";
+        std::cout << std::setw(4) << i << " ";
+        if (vertex_costs[i] == AdjencyLists::max_int)
+        {
+            std::cout << "INF ";
+        }
+        else
+        {
+            std::cout << std::setw(4) << vertex_costs[i];
+        }
+        std::cout << "  |  ";
         int parent = i;
         do
         {
+            // std::cout << "Rodzic " << parent << "Rodzic rodzica " << vertex_ancestors[parent] << std::endl;
             path = std::to_string(parent) + " " + path;
             parent = vertex_ancestors[parent];
         } while (parent != -1);

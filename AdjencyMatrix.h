@@ -17,8 +17,11 @@ public:
     AdjencyMatrix();
     ~AdjencyMatrix();
     void fill_with_inifinites(int number_of_vertices);
-    static AdjencyMatrix &init_from_file(bool is_directed = false);
+    static AdjencyMatrix &init_from_file(std::string file_name, bool is_directed = false);
     void print();
+    void delete_vector();
+    bool is_empty();
+    void swap_vector_for_empty();
 
     void prim();
     void dijkstra();
