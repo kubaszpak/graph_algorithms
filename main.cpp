@@ -1,5 +1,7 @@
 #include "AdjencyMatrix.h"
 #include "AdjencyLists.h"
+#include "matplotlibcpp.h"
+namespace plt = matplotlibcpp;
 
 int main()
 {
@@ -11,6 +13,8 @@ int main()
     adjency_lists.print();
     // adjency_lists.prim();
     adjency_lists.dijkstra();
+    plt::plot({1, 3, 2, 4});
+    plt::show();
 }
 
 //     std::vector<DijkstraVertex> vertices;
