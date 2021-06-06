@@ -1,5 +1,6 @@
 #include "AdjencyMatrix.h"
 #include "AdjencyLists.h"
+#include "AdditionalDataStructures.h"
 
 void main_menu()
 {
@@ -21,8 +22,8 @@ void graph_representation_menu()
 void edge_type_menu()
 {
     std::cout << "---Edge type:---" << std::endl;
-    std::cout << "0. Directed edges" << std::endl;
-    std::cout << "1. Undirected edges" << std::endl;
+    std::cout << "0. Undirected edges" << std::endl;
+    std::cout << "1. Directed edges" << std::endl;
 }
 
 void take_input(int &choice, int &output_check)
@@ -103,11 +104,8 @@ int main()
                 {
                     file_name = "graph.txt";
                 }
-                // adjency_lists.swap_vector_for_empty();
-                // adjency_matrix.swap_vector_for_empty();
-                adjency_lists = AdjencyLists::init_from_file(file_name, choice);
-                adjency_matrix = AdjencyMatrix::init_from_file(file_name, choice);
-                wait_for_enter();
+                adjency_lists = AdjencyLists(file_name, choice);
+                adjency_matrix = AdjencyMatrix(file_name, choice);
                 break;
             case 1:
                 system("cls");
@@ -168,7 +166,7 @@ int main()
                           << "Choose an option from the menu: " << std::endl
                           << std::endl;
                 choice = take_int_input(choice, 1);
-                std::cout << choice << std::endl;
+                // std::cout << choice << std::endl;
                 if (choice == 0)
                 {
                     adjency_matrix.dijkstra();

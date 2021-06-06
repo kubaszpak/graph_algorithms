@@ -11,6 +11,59 @@ AdjencyLists::~AdjencyLists()
     delete_vector();
 }
 
+AdjencyLists::AdjencyLists(std::string file_name, bool is_directed)
+{
+
+    std::ifstream file(file_name);
+
+    int starting_vertex, final_vertex, edge_weight;
+
+    if (file.is_open())
+    {
+        file >> this->number_of_edges;
+        file >> this->number_of_vertices;
+        file >> this->starting_vertex;
+        file >> this->final_vertex;
+
+        // adjency_lists.fill_with_inifinites(adjency_lists.number_of_vertices);
+        resize_vector(number_of_vertices);
+
+        if (file.fail())
+        {
+            std::cout << "File error - READ SIZE" << std::endl;
+        }
+        else
+        {
+            for (int i = 0; i < number_of_edges; i++)
+            {
+                file >> starting_vertex;
+                file >> final_vertex;
+                file >> edge_weight;
+
+                if (file.fail())
+                {
+                    std::cout << "File error - READ DATA" << std::endl;
+                    return;
+                }
+                else
+                {
+                    adjency_lists[starting_vertex].push_back(std::make_pair(final_vertex, edge_weight));
+                    if (!is_directed)
+                    {
+                        adjency_lists[final_vertex].push_back(std::make_pair(starting_vertex, edge_weight));
+                    }
+                }
+            }
+        }
+        file.close();
+    }
+    else
+    {
+        std::cout << "File error - OPEN" << std::endl;
+        return;
+    }
+}
+
 void AdjencyLists::resize_vector(int number_of_vertices)
 {
     adjency_lists.resize(number_of_vertices);
@@ -26,76 +79,6 @@ bool AdjencyLists::is_empty()
     return adjency_lists.empty();
 }
 
-void AdjencyLists::swap_vector_for_empty()
-{
-    for (int i = 0; i < adjency_lists.size(); i++)
-    {
-        adjency_lists[i].clear();
-        adjency_lists.resize(0);
-    }
-    adjency_lists.clear();
-    adjency_lists.resize(0);
-}
-
-AdjencyLists &AdjencyLists::init_from_file(std::string file_name, bool is_directed)
-{
-
-    std::ifstream file(file_name);
-
-    static AdjencyLists adjency_lists;
-
-    adjency_lists.adjency_lists.swap(std::vector<std::vector<std::pair<int, int>>>(0));
-
-    int starting_vertex, final_vertex, edge_weight;
-
-    if (file.is_open())
-    {
-        file >> adjency_lists.number_of_edges;
-        file >> adjency_lists.number_of_vertices;
-        file >> adjency_lists.starting_vertex;
-        file >> adjency_lists.final_vertex;
-
-        // adjency_lists.fill_with_inifinites(adjency_lists.number_of_vertices);
-        adjency_lists.resize_vector(adjency_lists.number_of_vertices);
-
-        if (file.fail())
-        {
-            std::cout << "File error - READ SIZE" << std::endl;
-        }
-        else
-        {
-            for (int i = 0; i < adjency_lists.number_of_edges; i++)
-            {
-                file >> starting_vertex;
-                file >> final_vertex;
-                file >> edge_weight;
-
-                if (file.fail())
-                {
-                    std::cout << "File error - READ DATA" << std::endl;
-                    return adjency_lists;
-                }
-                else
-                {
-                    adjency_lists.adjency_lists[starting_vertex].push_back(std::make_pair(final_vertex, edge_weight));
-                    if (!is_directed)
-                    {
-                        adjency_lists.adjency_lists[final_vertex].push_back(std::make_pair(starting_vertex, edge_weight));
-                    }
-                }
-            }
-        }
-        file.close();
-    }
-    else
-    {
-        std::cout << "File error - OPEN" << std::endl;
-        return adjency_lists;
-    }
-
-    return adjency_lists;
-}
-
 void AdjencyLists::print()
 {
     std::cout << std::endl
@@ -106,7 +89,6 @@ void AdjencyLists::print()
         std::cout << i << "    ";
         for (int j = 0; j < this->adjency_lists[i].size(); j++)
         {
-            std::cout << "ROZMIAR " << this->adjency_lists[i].size() << std::endl;
             std::cout << std::left << std::setw(2) << this->adjency_lists[i][j].first << " " << std::left << std::setw(2) << this->adjency_lists[i][j].second << "    ";
         }
         std::cout << std::endl;
@@ -134,6 +116,7 @@ void AdjencyLists::prim()
     std::priority_queue<Edge, std::vector<Edge>, std::greater<Edge>> priority_queue;
 
     int vertex = this->starting_vertex;
+    visited[vertex] = true;
 
     std::vector<Edge> result_edge_list;
 
@@ -142,12 +125,11 @@ void AdjencyLists::prim()
     for (int i = 0; i < number_of_vertices - 1; i++)
     {
 
-        visited[vertex] = true;
-
         for (int j = 0; j < this->adjency_lists[vertex].size(); j++)
         {
             // matrix[vertex][j] != AdjencyLists::max_int &&
-            if (visited[j] == false)
+            // std::cout << "DEBUG " << adjency_lists[vertex][j].first << " " << adjency_lists[vertex][j].second << std::endl;
+            if (visited[adjency_lists[vertex][j].first] == false)
             {
                 priority_queue.push(Edge(vertex, adjency_lists[vertex][j].first, adjency_lists[vertex][j].second));
             }
@@ -167,14 +149,17 @@ void AdjencyLists::prim()
 
         result_edge_list.push_back(edge);
 
+        visited[vertex] = true;
+
         // if(priority_queue.empty()) break;
     }
 
-    if (priority_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
-    {
-        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
-        return;
-    }
+    // for (int k = 0; k < visited.size(); k++)
+    // {
+    //     std::cout << visited[k] << " ";
+    // }
+    // std::cout << std::endl
+    //           << priority_queue.empty() << std::endl;
 
     int result = 0;
     for (int i = 0; i < result_edge_list.size(); i++)
@@ -183,6 +168,11 @@ void AdjencyLists::prim()
         result += result_edge_list[i].weight;
     }
     std::cout << "Result: " << result << std::endl;
+
+    if (std::find(visited.begin(), visited.end(), false) != visited.end())
+    {
+        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
+    }
 }
 
 void AdjencyLists::dijkstra()
