@@ -19,6 +19,7 @@ public:
     void resize_vector(int number_of_vertices);
     static AdjencyLists &init_from_file(bool is_directed = false);
     void print();
+    bool edge_exists(int from, int to);
 
     void prim();
     void dijkstra();

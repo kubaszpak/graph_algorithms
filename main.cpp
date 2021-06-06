@@ -7,8 +7,10 @@ int main()
     // adjency_matrix.print();
     // adjency_matrix.prim();
     // adjency_matrix.dijkstra();
-    AdjencyLists adjency_lists = AdjencyLists::init_from_file();
+    AdjencyLists adjency_lists = AdjencyLists::init_from_file(true);
     adjency_lists.print();
+    // adjency_lists.prim();
+    adjency_lists.dijkstra();
 }
 
 //     std::vector<DijkstraVertex> vertices;

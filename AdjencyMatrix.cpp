@@ -210,6 +210,7 @@ void AdjencyMatrix::dijkstra()
 
         visited[dijkstraVertex.vertex_number] = true;
 
+        // TODO: Potential performance improvement don't check the edge the algorithm came from
         for (int i = 0; i < number_of_vertices; i++)
         {
 
