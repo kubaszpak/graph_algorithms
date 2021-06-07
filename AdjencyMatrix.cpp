@@ -8,7 +8,7 @@ AdjencyMatrix::AdjencyMatrix()
 
 AdjencyMatrix::AdjencyMatrix(std::string file_name, bool is_directed)
 {
-    std::cout << is_directed << std::endl;
+    // std::cout << is_directed << std::endl;
     std::ifstream file(file_name);
 
     int starting_vertex, final_vertex, edge_weight;
@@ -165,18 +165,18 @@ void AdjencyMatrix::prim()
     // std::cout << std::endl
     //           << priority_queue.empty() << std::endl;
 
-    int result = 0;
-    for (int i = 0; i < result_edge_list.size(); i++)
-    {
-        std::cout << result_edge_list[i] << std::endl;
-        result += result_edge_list[i].weight;
-    }
-    std::cout << "Result: " << result << std::endl;
+    // int result = 0;
+    // for (int i = 0; i < result_edge_list.size(); i++)
+    // {
+    //     std::cout << result_edge_list[i] << std::endl;
+    //     result += result_edge_list[i].weight;
+    // }
+    // std::cout << "Result: " << result << std::endl;
 
-    if (std::find(visited.begin(), visited.end(), false) != visited.end())
-    {
-        std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
-    }
+    // if (std::find(visited.begin(), visited.end(), false) != visited.end())
+    // {
+    //     std::cout << "Dla podanego grafu nie znaleziono najmniejszego drzewa rozpinajacego, nie do kazdego wierzcholka mozna znalezc droge!" << std::endl;
+    // }
 }
 
 void AdjencyMatrix::dijkstra()
@@ -243,37 +243,37 @@ void AdjencyMatrix::dijkstra()
         // prev_vertex_number = dijkstraVertex.vertex_number;
     }
 
-    if (negative_edge_found)
-        std::cout << "UWAGA! Znaleziono krawedz o ujemnej wadze, jesli program nie zatrzymuje sie, w grafie znajduje sie ujemny cykl, zatrzymaj dzialanie programu CTRL C" << std::endl;
+    // if (negative_edge_found)
+    //     std::cout << "UWAGA! Znaleziono krawedz o ujemnej wadze, jesli program nie zatrzymuje sie, w grafie znajduje sie ujemny cykl, zatrzymaj dzialanie programu CTRL C" << std::endl;
 
-    std::cout << "Start = " << starting_vertex << std::endl;
-    std::cout << "End   Dist    Path" << std::endl;
-    for (int i = 0; i < number_of_vertices; i++)
-    {
-        std::string path = "";
-        std::cout << std::setw(4) << i << " ";
-        if (vertex_costs[i] == AdjencyMatrix::max_int)
-        {
-            std::cout << "INF ";
-        }
-        else
-        {
-            std::cout << std::setw(4) << vertex_costs[i];
-        }
-        std::cout << "  |  ";
-        int parent = i;
-        do
-        {
-            path = std::to_string(parent) + " " + path;
-            parent = vertex_ancestors[parent];
-        } while (parent != -1);
+    // std::cout << "Start = " << starting_vertex << std::endl;
+    // std::cout << "End   Dist    Path" << std::endl;
+    // for (int i = 0; i < number_of_vertices; i++)
+    // {
+    //     std::string path = "";
+    //     std::cout << std::setw(4) << i << " ";
+    //     if (vertex_costs[i] == AdjencyMatrix::max_int)
+    //     {
+    //         std::cout << "INF ";
+    //     }
+    //     else
+    //     {
+    //         std::cout << std::setw(4) << vertex_costs[i];
+    //     }
+    //     std::cout << "  |  ";
+    //     int parent = i;
+    //     do
+    //     {
+    //         path = std::to_string(parent) + " " + path;
+    //         parent = vertex_ancestors[parent];
+    //     } while (parent != -1);
 
-        std::cout
-            << path << std::endl;
-    }
+    //     std::cout
+    //         << path << std::endl;
+    // }
 
-    if (vertex_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
-    {
-        std::cout << "UWAGA! Nie do wszystkich wierzcholkow mozna dotrzec z wierzcholka poczatkowego!" << std::endl;
-    }
+    // if (vertex_queue.empty() && std::find(visited.begin(), visited.end(), false) != visited.end())
+    // {
+    //     std::cout << "UWAGA! Nie do wszystkich wierzcholkow mozna dotrzec z wierzcholka poczatkowego!" << std::endl;
+    // }
 }
